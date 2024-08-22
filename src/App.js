@@ -118,12 +118,18 @@ function App() {
 
   return (
     <>
-    <ImportImage
-       handleSubmit = {handleSubmit}
-       handleFileChange = {handleFileChange}
-       image = {image}
-       dataAge = {dataAge}
-    />
+      <ImportImage
+        handleSubmit={handleSubmit}
+        handleFileChange={handleFileChange}
+        image={image}
+        dataAge={dataAge}
+        widthF={widthF}
+        heightF={heightF}
+        width={width}
+        height={height}
+        setWidthF={setWidthF}
+        setHeightF={setHeightF}
+      />
       <div>
         {/* render the detail */}
         {loading && <>Loading...</>}
