@@ -107,8 +107,8 @@ function App() {
   };
 
   return (
-    <div className="body">
-      <div className="import-image">
+    <div className="body flex flex-wrap">
+      <div className="import-image flex-initial">
         <ImportImage
             handleSubmit={handleSubmit}
             handleFileChange={handleFileChange}
@@ -123,7 +123,7 @@ function App() {
             hoveredIndex = {hoveredIndex}
           />
       </div>
-      <div className="result">
+      <div className="result flex-1">
         {/* render the detail */}
         {loading && <div className="mt-5">Loading...</div>}
         {(dataAge && dataAge.faces) || (dataQuality && dataQuality.quality) ? (
@@ -149,7 +149,7 @@ function App() {
                     data-faceindex={index}
                     onMouseEnter={() => handleMouseEnter(index)}
                     onMouseLeave={handleMouseLeave}
-                    className="flex border-green-400 border-x-4 border-e-4
+                    className="flex w-96 border-green-400 border-x-4 border-e-4
                       border-y-2
                      hover:border-purple-600 p-2"
                 >

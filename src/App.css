@@ -3,9 +3,10 @@
   --image-width: 515.6px;
 }
 
-.body{
-  display: flex;
+*{
+  font-family: 'BMDANIEL-Bold', sans-serif !important;
 }
+
 .result{
   padding-left: 20px;
 }
