@@ -1,15 +1,35 @@
-import React from "react";
+import React, {useState} from "react";
+import { InboxOutlined } from '@ant-design/icons';
+import { Upload } from 'antd';
+const { Dragger } = Upload;
+
+
 
 export default function ImportImage(props, ref) {
-  const { handleSubmit, handleFileChange, image, dataAge, widthF, heightF,width, height, setWidthF, setHeightF, hoveredIndex} = props;
+  // eslint-disable-next-line
+  const { handleFileChange, image, dataAge, widthF, heightF,width, height, setWidthF, setHeightF, hoveredIndex} = props;
+  const [fileList, setFileList] = useState([]);
+  const propDragger = {
+    name: "file",
+    multiple: false,
+    fileList,
+    accept: "image/*",
+    beforeUpload: (file) => {
+      handleFileChange(file); 
+      return false;
+    },
+    onChange(info) {
+      // Cập nhật lại danh sách tệp khi có thay đổi
+      setFileList(info.fileList.slice(-1)); // Giữ lại tệp cuối cùng
+    },
+    onDrop(e) {
+      setFileList([]);
+    },
+  };
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Choose an image:
-          <input type="file" onChange={handleFileChange} accept="image/*" />
-        </label>
-        <div className="image-upload-container">
+      <div className="ms-2">
+        <div className="image-upload-container mt-5">
           {image && (
             <div className="image-wrapper">
               <img
@@ -48,8 +68,13 @@ export default function ImportImage(props, ref) {
             </div>
           )}
         </div>
-        <button type="submit">Upload</button>
-      </form>
+        <Dragger {...propDragger}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click or drag file to this area to upload</p>
+        </Dragger>
+      </div>
     </div>
   );
 }

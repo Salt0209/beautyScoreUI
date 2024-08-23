@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
 import ImportImage from "./ImportImage";
 
 function App() {
-  // Quản lý state cho file hình ảnh
-  const [selectedFile, setSelectedFile] = useState(null);
   // Quản lý state cho dữ liệu nhận được từ API
   const [dataAge, setDataAge] = useState(null);
   const [dataQuality, setDataQuality] = useState(null);
@@ -20,7 +18,6 @@ function App() {
   const [widthF, setWidthF] = useState(0);
   // Trạng thái hover khuôn mặt
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  useEffect(() => {}, [height, width]);
 
   // Hàm xử lý khi người dùng chọn hình ảnh
   const handleFileChange = (e) => {
@@ -28,7 +25,7 @@ function App() {
     setDataAge(null);
     setDataQuality(null);
 
-    const file = e.target.files[0];
+    const file = e;
     if (file) {
       // Preview ảnh
       const reader = new FileReader();
@@ -44,21 +41,14 @@ function App() {
       };
       reader.readAsDataURL(file);
 
-      // Set file để gửi form
-      setSelectedFile(e.target.files[0]);
+      // Gửi form
+      handleSubmit(e);
     }
   };
   // Hàm xử lý khi người dùng submit form
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Ngăn form submit mặc định
-
-    if (!selectedFile) {
-      alert("Please select a file first!");
-      return;
-    }
-
     const formData = new FormData();
-    formData.append("image", selectedFile);
+    formData.append("image", e);
 
     try {
       setLoading(true);
@@ -70,7 +60,7 @@ function App() {
       );
 
       const result_age = res_age.data;
-      console.log("Success Age Recognize:", result_age);
+      //console.log("Success Age Recognize:", result_age);
       setDataAge(result_age);
 
       // Gọi api chấm điểm hình ảnh
@@ -80,7 +70,7 @@ function App() {
       );
 
       const result_quality_ugc = res_quality_ugc.data;
-      console.log("Success Quality ugc:", result_quality_ugc);
+      //console.log("Success Quality ugc:", result_quality_ugc);
       setDataQuality(result_quality_ugc);
 
       setLoading(false);
@@ -135,49 +125,45 @@ function App() {
       </div>
       <div className="result">
         {/* render the detail */}
-        {loading && <>Loading...</>}
-        {dataAge && dataAge.faces && dataQuality && dataQuality.quality ? (
+        {loading && <div className="mt-5">Loading...</div>}
+        {(dataAge && dataAge.faces) || (dataQuality && dataQuality.quality) ? (
           <div>
             <div>
-              <h1>
-                Quality Score: {(dataQuality.quality.score * 100).toFixed(1)} %
-              </h1>
-              <p>
-                <strong>
-                  This photo is {renderSwitch(dataQuality.quality.class)}
-                </strong>{" "}
-              </p>
+              {dataQuality && (
+                <>
+                  <p className="text-4xl font-bold mt-5">
+                    Quality Score: {(dataQuality.quality.score * 100).toFixed(1)} %
+                  </p>
+                  <p className="text-xl font-semibold my-2">
+                      This photo is {renderSwitch(dataQuality.quality.class)}
+                  </p>
+                </>
+              )}
             </div>
 
-            <h1>We found {dataAge.faces.length} persons at the picture</h1>
-            {dataAge &&
-              dataAge.faces &&
-              dataAge.faces.map((face, index) => (
-                <div key={index}>
-                  <button
+            {dataAge && dataAge.faces && (
+              <>
+              <p className="text-2xl font-semibold my-2">We found {dataAge.faces.length} persons at the picture!</p>
+              {dataAge.faces.map((face, index) => (
+                <div key={index}
                     data-faceindex={index}
                     onMouseEnter={() => handleMouseEnter(index)}
                     onMouseLeave={handleMouseLeave}
-                  >
-                    Face {index + 1}
-                  </button>
-                  <p>
-                    <strong>Bounding Box:</strong> {face.bbox.join(", ")}
-                  </p>
-                  <p>
-                    <strong>Score:</strong> {face.score}
-                  </p>
-                  <p>
-                    <strong>Age:</strong> {face.age}
-                  </p>
-                  <p>
-                    <strong>Class:</strong> {face.class}
-                  </p>
+                    className="flex border-green-400 border-x-4 border-e-4
+                      border-y-2
+                     hover:border-purple-600 p-2"
+                >
+                  <span className="flex-1">Person {index + 1}</span>
+                  <span className="flex-initial">
+                    <strong>Age:</strong> {face.age.toFixed(0)}
+                  </span>
                 </div>
               ))}
+              </>
+            )}
           </div>
         ) : (
-          <p>Try out the pre-trained Everypixel models in action!</p>
+          <p className="text-2xl font-bold mt-5">Try out the pre-trained Everypixel models in action!</p>
         )}
       </div>
     </div>
