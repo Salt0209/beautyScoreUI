@@ -1,6 +1,7 @@
-import React, { useState,useEffect } from 'react';
-import axios from 'axios';
-import './App.css'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./App.css";
+import ImportImage from "./ImportImage";
 
 function App() {
   // Quản lý state cho file hình ảnh
@@ -19,6 +20,7 @@ function App() {
   const [widthF, setWidthF] = useState(0);
   // Trạng thái hover khuôn mặt
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  useEffect(() => {}, [height, width]);
 
   // Hàm xử lý khi người dùng chọn hình ảnh
   const handleFileChange = (e) => {
@@ -43,13 +45,9 @@ function App() {
       reader.readAsDataURL(file);
 
       // Set file để gửi form
-      setSelectedFile(e.target.files[0]);      
+      setSelectedFile(e.target.files[0]);
     }
   };
-  useEffect(() => {
-  }, [height, width]);
-  
-
   // Hàm xử lý khi người dùng submit form
   const handleSubmit = async (e) => {
     e.preventDefault(); // Ngăn form submit mặc định
@@ -60,28 +58,34 @@ function App() {
     }
 
     const formData = new FormData();
-    formData.append('image', selectedFile);
+    formData.append("image", selectedFile);
 
     try {
       setLoading(true);
 
       // Gọi api đoán tuổi
-      const res_age = await axios.post('http://localhost:8000/api/age/', formData);
+      const res_age = await axios.post(
+        "https://mthuan222.pythonanywhere.com/api/age/",
+        formData
+      );
 
       const result_age = res_age.data;
-      console.log('Success Age Recognize:', result_age);
+      console.log("Success Age Recognize:", result_age);
       setDataAge(result_age);
 
       // Gọi api chấm điểm hình ảnh
-      const res_quality_ugc = await axios.post('http://localhost:8000/api/quality_ugc/', formData);
+      const res_quality_ugc = await axios.post(
+        "https://mthuan222.pythonanywhere.com/api/quality_ugc/",
+        formData
+      );
 
       const result_quality_ugc = res_quality_ugc.data;
-      console.log('Success Quality ugc:', result_quality_ugc);
+      console.log("Success Quality ugc:", result_quality_ugc);
       setDataQuality(result_quality_ugc);
 
       setLoading(false);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -96,7 +100,7 @@ function App() {
 
   // Switch case giá trị đánh giá chất lượng ảnh ugc
   const renderSwitch = (param) => {
-    switch(param) {
+    switch (param) {
       case 1:
         return "very bad";
       case 2:
@@ -110,78 +114,73 @@ function App() {
       default:
         return "unknown";
     }
-  }
+  };
 
   return (
-    <>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Choose an image:
-            <input type="file" onChange={handleFileChange} accept="image/*" />
-          </label>
-          <div className="image-upload-container">            
-          {image && (
-            <div className="image-wrapper">
-              <img src={image} alt="Preview" className="image-preview" 
-                  onLoad={(e) => {
-                    const imgElement = e.target;
-                    setWidthF(imgElement.width);
-                    setHeightF(imgElement.height);
-                  }}
-              />
-              {dataAge && dataAge.faces && dataAge.faces.map((face,index) => (
-                <div className={`face-frame estest_faceframe ${hoveredIndex === index ? 'hovered' : ''}`}
-                      key={index} 
-                      data-index={index}
-                      style={{ 
-                        top: `${face.bbox[1] * heightF / height}px`,
-                        left: `${face.bbox[0] * widthF / width}px`, 
-                        width: `${(face.bbox[2] - face.bbox[0]) * widthF / width}px`, 
-                        height: `${(face.bbox[3] - face.bbox[1]) * heightF / height}px`
-                        }}>
-                    <div>{index+1}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          </div>
-          <button type="submit">Upload</button>
-        </form>
+    <div className="body">
+      <div className="import-image">
+        <ImportImage
+            handleSubmit={handleSubmit}
+            handleFileChange={handleFileChange}
+            image={image}
+            dataAge={dataAge}
+            widthF={widthF}
+            heightF={heightF}
+            width={width}
+            height={height}
+            setWidthF={setWidthF}
+            setHeightF={setHeightF}
+            hoveredIndex = {hoveredIndex}
+          />
       </div>
-      <div>
-        {loading && (
-          <>
-            Loading...
-          </>
-        )}
+      <div className="result">
+        {/* render the detail */}
+        {loading && <>Loading...</>}
         {dataAge && dataAge.faces && dataQuality && dataQuality.quality ? (
           <div>
             <div>
-              <h1>Quality Score: {(dataQuality.quality.score * 100).toFixed(1)} %</h1>
-              <p><strong>This photo is {renderSwitch(dataQuality.quality.class)}</strong> </p>
+              <h1>
+                Quality Score: {(dataQuality.quality.score * 100).toFixed(1)} %
+              </h1>
+              <p>
+                <strong>
+                  This photo is {renderSwitch(dataQuality.quality.class)}
+                </strong>{" "}
+              </p>
             </div>
 
             <h1>We found {dataAge.faces.length} persons at the picture</h1>
-            {dataAge && dataAge.faces && dataAge.faces.map((face, index) => (
-              <div key={index}>
-                <button
-                  data-faceindex={index}
-                  onMouseEnter={() => handleMouseEnter(index)}
-                  onMouseLeave={handleMouseLeave}
-                >Face {index+1}</button>
-                <p><strong>Bounding Box:</strong> {face.bbox.join(', ')}</p>
-                <p><strong>Score:</strong> {face.score}</p>
-                <p><strong>Age:</strong> {face.age}</p>
-                <p><strong>Class:</strong> {face.class}</p>
-              </div>
-            ))}
+            {dataAge &&
+              dataAge.faces &&
+              dataAge.faces.map((face, index) => (
+                <div key={index}>
+                  <button
+                    data-faceindex={index}
+                    onMouseEnter={() => handleMouseEnter(index)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    Face {index + 1}
+                  </button>
+                  <p>
+                    <strong>Bounding Box:</strong> {face.bbox.join(", ")}
+                  </p>
+                  <p>
+                    <strong>Score:</strong> {face.score}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {face.age}
+                  </p>
+                  <p>
+                    <strong>Class:</strong> {face.class}
+                  </p>
+                </div>
+              ))}
           </div>
         ) : (
           <p>Try out the pre-trained Everypixel models in action!</p>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
