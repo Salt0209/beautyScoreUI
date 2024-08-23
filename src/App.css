@@ -42,7 +42,7 @@
 
 .face-frame {
   position: absolute;
-  border: 2px solid #45FF26; /* Border color for the face frame */
+  border: 2px solid #66bb6a; /* Border color for the face frame */
   box-sizing: border-box; /* Ensures the border is included in the size */
   pointer-events: none; /* Prevents the frame from interfering with image interactions */
   display: flex;
@@ -58,5 +58,5 @@
 }
 
 .estest_faceframe.hovered {
-  border-color: purple; /* Hoặc bất kỳ màu nào bạn muốn */
+  border-color: #8e24aa; /* Hoặc bất kỳ màu nào bạn muốn */
 }
