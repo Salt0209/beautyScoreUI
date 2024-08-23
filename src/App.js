@@ -65,7 +65,7 @@ function App() {
 
       // Gọi api đoán tuổi
       const res_age = await axios.post(
-        "http://localhost:8000/api/age/",
+        "https://mthuan222.pythonanywhere.com/api/age/",
         formData
       );
 
@@ -75,7 +75,7 @@ function App() {
 
       // Gọi api chấm điểm hình ảnh
       const res_quality_ugc = await axios.post(
-        "http://localhost:8000/api/quality_ugc/",
+        "https://mthuan222.pythonanywhere.com/api/quality_ugc/",
         formData
       );
 
@@ -117,20 +117,23 @@ function App() {
   };
 
   return (
-    <>
-      <ImportImage
-        handleSubmit={handleSubmit}
-        handleFileChange={handleFileChange}
-        image={image}
-        dataAge={dataAge}
-        widthF={widthF}
-        heightF={heightF}
-        width={width}
-        height={height}
-        setWidthF={setWidthF}
-        setHeightF={setHeightF}
-      />
-      <div>
+    <div className="body">
+      <div className="import-image">
+        <ImportImage
+            handleSubmit={handleSubmit}
+            handleFileChange={handleFileChange}
+            image={image}
+            dataAge={dataAge}
+            widthF={widthF}
+            heightF={heightF}
+            width={width}
+            height={height}
+            setWidthF={setWidthF}
+            setHeightF={setHeightF}
+            hoveredIndex = {hoveredIndex}
+          />
+      </div>
+      <div className="result">
         {/* render the detail */}
         {loading && <>Loading...</>}
         {dataAge && dataAge.faces && dataQuality && dataQuality.quality ? (
@@ -177,7 +180,7 @@ function App() {
           <p>Try out the pre-trained Everypixel models in action!</p>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

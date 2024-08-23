@@ -1,8 +1,7 @@
 import React from "react";
-import { useImperativeHandle } from "react";
 
 export default function ImportImage(props, ref) {
-  const { handleSubmit, handleFileChange, image, dataAge, widthF, heightF,width, height, setWidthF, setHeightF} = props;
+  const { handleSubmit, handleFileChange, image, dataAge, widthF, heightF,width, height, setWidthF, setHeightF, hoveredIndex} = props;
   return (
     <div>
       <form onSubmit={handleSubmit}>
